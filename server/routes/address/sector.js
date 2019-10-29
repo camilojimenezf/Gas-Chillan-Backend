@@ -1,50 +1,47 @@
 const express = require('express');
 const app = express();
-const bcrypt = require('bcrypt');
-const _ = require('underscore');
-const User = require('../models/user');
 
-app.get('/user', function (req, res) {
+const Sector = require('../../models/sector');
+
+app.get('/sector', function (req, res) {
     
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 5;
     limite=Number(limite);
     
-    User.find({enabled: true}, 'name surname email role enabled img')
+    Sector.find({enabled: true}, 'name')
             .skip(desde)   
             .limit(limite)  
-            .exec( (err, usuarios) =>{
+            .exec( (err, sectors) =>{
                 if( err ){
                     return res.status(400).json({
                         ok:false,
                         err
                     });
                 }
-                User.countDocuments({enabled: true}, (err,conteo)=>{
-
+                Sector.countDocuments({enabled: true}, (err,conteo)=>{
                     res.json({
                         ok:true,
-                        usuarios,
+                        sectors,
                         cantidad: conteo
                     });
-                    
                 })
             });
 });
 
-app.get('/user/:id', (req,res)=>{
+app.get('/sector/:id', (req,res)=>{
 
     let id=req.params.id;
 
-    User.findById(id)
-        .exec((err, userDB)=>{
+    Sector.findById(id)
+        .exec((err, sectorDB)=>{
             if(err){
                 return res.status(500).json({
                     ok:false,
                     err
                 });
             }
-            if(!userDB){
+            if(!sectorDB){
                 return res.status(400).json({
                     ok:false,
                     err:{
@@ -54,26 +51,21 @@ app.get('/user/:id', (req,res)=>{
             }
             res.json({
                 ok:true,
-                user: userDB
+                sector: sectorDB
             });
         });
 });
 
-app.post('/user', function (req, res) {
+app.post('/sector', function (req, res) {
 
     let body = req.body;
 
-    let user = new User({
+    let sector = new Sector({
         name: body.name,
-        surname: body.surname,
-        email: body.email,
-        img: body.img,
-        password: body.password, //lo sincronizamos de manera sincrona (sin usar callbacks ni promesas) y el segundo parametro
-        role: body.role,
-        enabled: body.enabled    //corresponde al número de veces que se le hara hash                   
+        enabled: body.enabled               
     });
 
-    user.save( (err,userDB) => {
+    sector.save( (err,sectorDB) => {
         if( err ){
             return res.status(400).json({
                 ok:false,
@@ -82,56 +74,72 @@ app.post('/user', function (req, res) {
         }
         res.status(201).json({
             ok: true,
-            user: userDB
+            sector: sectorDB
         })
     });
 }); 
 
-app.put('/user/:id', function(req, res){
+
+app.put('/sector/:id', function(req, res){
 
     let id= req.params.id;
-    let body = _.pick(req.body, ['name','surname','img','role','enabled']) ;
+    let body= req.body;
 
-    //runValidators permite que las validaciones del Schema Usuario sean validas
-    User.findByIdAndUpdate( id, body, {new:true, runValidators:true}, (err,userDB)=>{ 
-        if( err ){
-            return res.status(400).json({
+    Sector.findById(id, (err, sectorDB)=>{
+        if(err){
+            return res.status(500).json({
                 ok:false,
                 err
             });
         }
-
-        res.json({
-            ok:true,
-            user: userDB
+        if(!sectorDB){
+            return res.status(400).json({
+                ok:false,
+                err:{
+                    message: 'El ID no existe'
+                }
+            });
+        }
+        sectorDB.name= body.name;
+        sectorDB.save( (err, sectorUpdate)=>{
+            if(err){
+                return res.status(500).json({
+                    ok:false,
+                    err
+                });
+            }
+            res.json({
+                ok:true,
+                sector: sectorUpdate
+            })
         });
     });
 });
 
-app.delete('/user/:id', function (req, res){
+app.delete('/sector/:id', function (req, res){
     let id = req.params.id;
     let cambiaEstado = {
         enabled: false
     };
 
-    User.findByIdAndUpdate(id, cambiaEstado ,{new:true} ,(err, usuarioBorrado)=>{
+    Sector.findByIdAndUpdate(id, cambiaEstado ,{new:true} ,(err, sectorDeleted)=>{
         if( err ){
             return res.status(400).json({
                 ok:false,
                 err
             });
         }
-        if( !usuarioBorrado ){
+        if( !sectorDeleted ){
             return res.status(400).json({
                 ok:false,
                 err:{   
-                    message:'Usuario no encontrado'
+                    message:'Sector no encontrado'
                 }
             });
         }
         res.json({
             ok:true,
-            user: usuarioBorrado
+            sector: sectorDeleted
         });
     });
 });
