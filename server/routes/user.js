@@ -6,33 +6,30 @@ const User = require('../models/user');
 
 const { verificaToken, verificaAdmin_Recep_Role } = require('../middlewares/autenticacion');
 
-app.get('/users', verificaToken, verificaAdmin_Recep_Role, function(req, res) {
-
+app.get('/user', verificaToken, verificaAdmin_Recep_Role, function (req, res) {
+    
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 5;
-    limite = Number(limite);
-
-    User.find({ enabled: true }, 'name surname email role enabled img')
-        .skip(desde)
-        .limit(limite)
-        .exec((err, usuarios) => {
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    err
+    limite=Number(limite);
+    
+    User.find({enabled: true}, 'name surname email role enabled img')
+            .skip(desde)   
+            .limit(limite)  
+            .exec( (err, usuarios) =>{
+                if( err ){
+                    return res.status(400).json({
+                        ok:false,
+                        err
+                    });
+                }
+                User.countDocuments({enabled: true}, (err,conteo)=>{
+                    res.json({
+                        ok: true,
+                        usuarios,
+                        cantidad: conteo
+                    });
                 });
-            }
-
-            User.countDocuments({ enabled: true }, (err, conteo) => {
-
-                res.json({
-                    ok: true,
-                    usuarios,
-                    cantidad: conteo
-                });
-
-            })
-        });
+            });
 });
 
 app.get('/user/:id', verificaToken, verificaAdmin_Recep_Role, (req, res) => {
