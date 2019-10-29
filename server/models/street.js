@@ -9,10 +9,10 @@ let streetSchema = new Schema({
         unique:true,
         required: [true,'El nombre es necesario']
     },
-    village:{
+    village:[{
         type: mongoose.Schema.Types.ObjectId,
         ref:'Village'
-    },
+    }],
     enabled:{
         type: Boolean,
         default: true
