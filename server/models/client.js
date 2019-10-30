@@ -29,7 +29,6 @@ let clientSchema = new Schema({
     },
     email: {
         type: String,
-        unique: true
     },
     client_type: {
         type: String,
