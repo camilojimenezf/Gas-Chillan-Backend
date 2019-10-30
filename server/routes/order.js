@@ -8,31 +8,32 @@ app.get('/order', function(req, res) {
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 5;
     let enabled = req.query.habilitado || true;
-    limite = Number(limite);
+    limite=Number(limite);
 
-    Order.find({ enabled: enabled })
-        .skip(desde)
-        .limit(limite)
-        .populate({ path: 'address', populate: { path: 'sector village street', select: 'name' } })
-        .populate('recepcionist', 'name surname')
-        .populate('seller', 'name surname')
-        .populate('client', 'name surname phone email client_type')
-        .populate('orderDetail')
-        .exec((err, orders) => {
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    err
-                });
-            }
-            Order.countDocuments({ enabled: true }, (err, conteo) => {
-                res.json({
-                    ok: true,
-                    orders,
-                    cantidad: conteo
-                });
-            })
-        });
+    Order.find({enabled: enabled})
+            .skip(desde)   
+            .limit(limite)
+            .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+            .populate('recepcionist', 'name surname')
+            .populate('seller', 'name surname')
+            .populate('client', 'name surname phone email client_type')
+            .populate('orderDetail')
+            .exec( (err, orders) =>{
+                if( err ){
+                    return res.status(400).json({
+                        ok:false,
+                        err
+                    });
+                }
+                Order.countDocuments({enabled: enabled}, (err,conteo)=>{
+                    res.json({
+                        ok:true,
+                        orders,
+                        cantidad: conteo
+                    });
+                })
+            });
+
 });
 
 app.get('/order/:id', (req, res) => {
