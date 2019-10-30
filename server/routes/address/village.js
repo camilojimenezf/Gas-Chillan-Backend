@@ -6,7 +6,7 @@ const Village = require('../../models/village');
 app.get('/village', function (req, res) {
     
     let desde = Number(req.query.desde) || 0;
-    let limite = req.query.limite || 5;
+    let limite = req.query.limite || 1000;
     limite=Number(limite);
     
     Village.find({enabled: true}, 'name')

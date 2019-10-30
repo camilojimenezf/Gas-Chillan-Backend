@@ -6,7 +6,7 @@ const Sector = require('../../models/sector');
 app.get('/sector', function (req, res) {
     
     let desde = Number(req.query.desde) || 0;
-    let limite = req.query.limite || 5;
+    let limite = req.query.limite || 1000;
     limite=Number(limite);
     
     Sector.find({enabled: true}, 'name')

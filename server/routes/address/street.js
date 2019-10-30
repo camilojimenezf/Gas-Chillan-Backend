@@ -7,7 +7,7 @@ const Street = require('../../models/street');
 app.get('/street', function (req, res) {
     
     let desde = Number(req.query.desde) || 0;
-    let limite = req.query.limite || 5;
+    let limite = req.query.limite || 1000;
     limite=Number(limite);
     
     Street.find({enabled: true}, 'name')
