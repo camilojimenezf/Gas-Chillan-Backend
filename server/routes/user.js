@@ -6,13 +6,14 @@ const User = require('../models/user');
 
 const { verificaToken, verificaAdmin_Recep_Role } = require('../middlewares/autenticacion');
 
-app.get('/user', verificaToken, verificaAdmin_Recep_Role, function (req, res) {
+app.get('/user', function (req, res) {
     
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 5;
+    let enabled = req.query.habilitado || true;
     limite=Number(limite);
     
-    User.find({enabled: true}, 'name surname email role enabled img')
+    User.find({enabled: enabled}, 'name surname email role enabled img')
             .skip(desde)   
             .limit(limite)  
             .exec( (err, usuarios) =>{
