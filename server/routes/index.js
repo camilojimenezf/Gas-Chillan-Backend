@@ -10,7 +10,8 @@ app.use( require('./address/street') );
 app.use( require('./login') );
 app.use( require('./cylinder') );
 app.use( require('./client') );
-
+app.use( require('./order') );
+app.use( require('./order-detail') );
 
 
 

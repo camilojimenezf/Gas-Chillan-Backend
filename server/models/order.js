@@ -1,6 +1,7 @@
 /* Require de Mongoose y Unique Validator*/
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
+const moment = require('moment-timezone');
 
 let prioridadValida={
     values: ['ALTA','NORMAL'],
@@ -17,38 +18,58 @@ let Schema = mongoose.Schema;
 let orderSchema = new Schema({
     recepcionist:{
         type: mongoose.Schema.Types.ObjectId,
+        required:true,
         ref:'User',
-        require:true
     },
     seller:{
         type: mongoose.Schema.Types.ObjectId,
+        required:true,
         ref:'User',
-        require:true
     },
     client:{
         type: mongoose.Schema.Types.ObjectId,
+        required:true,
         ref:'Client',
-        require:true
+    },
+    address:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:'Address',
     },
     priority:{
         type: String,
         default:'NORMAL',
         enum: prioridadValida
     },
+    orderDetail:[{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:'OrderDetail',
+    }],
     order_status:{
         type: String,
         default:'SIN ASIGNAR',
         enum: estadosValidos
     },
+    created_at:{
+        type: Date
+    },
+    confirmed_at:{
+        type: Date,
+        default:null
+    },
     enabled:{
         type: Boolean,
         default: true
     }
-},
-{
-    timestamps:true
 });
 
+
+orderSchema.pre('save', function (next) { 
+    let time=moment.tz('America/Santiago').format("YYYY-MM-DDTHH:MM:ss"); //CORREGIR HORA (ENTREGA 3 HORAS MAS TARDE)
+    this.created_at=time;
+    next();
+});
 
 
 /* Exportamos el esquema de User */
