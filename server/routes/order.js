@@ -25,7 +25,7 @@ app.get('/order', function (req, res) {
                         err
                     });
                 }
-                Order.countDocuments({enabled: true}, (err,conteo)=>{
+                Order.countDocuments({enabled: enabled}, (err,conteo)=>{
                     res.json({
                         ok:true,
                         orders,
