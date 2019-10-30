@@ -22,7 +22,7 @@ app.get('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
     Client.find({ enabled: habilitado }, 'name surname phone rut email enabled client_type')
         .skip(desde)
         .limit(limite)
-        .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+        .populate({ path: 'address', populate: { path: 'sector village street', select: 'name' } })
         .exec((err, clients) => {
             if (err) {
                 return res.status(400).json({
@@ -50,30 +50,30 @@ app.get('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
     let id = req.params.id;
 
     Client.findById(id)
-            .populate({path:'address',populate:{path:'sector village street',select:'name'}})
-            .exec( (err, clientDB) => {
+        .populate({ path: 'address', populate: { path: 'sector village street', select: 'name' } })
+        .exec((err, clientDB) => {
 
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                err
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            if (!clientDB) {
+                return res.status(500).json({
+                    ok: false,
+                    err: {
+                        message: 'ID no existe'
+                    }
+                });
+            }
+
+            res.json({
+                ok: true,
+                client: clientDB
             });
-        }
-
-        if (!clientDB) {
-            return res.status(500).json({
-                ok: false,
-                err: {
-                    message: 'ID no existe'
-                }
-            });
-        }
-
-        res.json({
-            ok: true,
-            client: clientDB
         });
-    });
 
 });
 
@@ -85,6 +85,7 @@ app.put('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
     let id = req.params.id;
     let body = req.body;
 
+    // Si el objeto viene vacio
     if (Object.keys(body).length === 0) {
         return res.status(400).json({
             ok: false,
@@ -94,21 +95,70 @@ app.put('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
         });
     }
 
-    Client.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, clientDB) => {
+    // Si se quiere actualizar el rut, debemos verificar que el rut no este registrado en la bdd
+    if (body.rut !== undefined) {
 
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
-            });
-        }
+        Client.findOne({ rut: body.rut }, (err, clientByRut) => {
 
-        res.json({
-            ok: true,
-            client: clientDB
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            // Si no lo encuentra, lo guarda
+            if (!clientByRut) {
+
+                Client.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, clientDB) => {
+
+                    if (err) {
+                        return res.status(400).json({
+                            ok: false,
+                            err
+                        });
+                    }
+
+                    res.json({
+                        ok: true,
+                        client: clientDB
+                    });
+
+                });
+
+            } else { // Si lo encuentra lanza error
+
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'El rut ingresado ya existe'
+                    }
+                });
+            }
+
+
         });
 
-    });
+    } else { // si no viene el rut
+
+
+        Client.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, clientDB) => {
+
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                client: clientDB
+            });
+
+        });
+
+    }
 
 });
 
@@ -127,7 +177,7 @@ app.post('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
         phone: body.phone,
         email: body.email,
         client_type: body.client_type,
-        address:body.address
+        address: body.address
     });
 
     client.save((err, clientDB) => {
