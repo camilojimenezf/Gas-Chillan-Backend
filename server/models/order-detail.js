@@ -4,28 +4,32 @@ const mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let orderDetailSchema = new Schema({
-    cylinder:{
+    cylinder: {
         type: mongoose.Schema.Types.ObjectId,
-        required:true,
-        ref:'Cylinder',
+        required: true,
+        ref: 'Cylinder',
     },
-    total_quantity:{
+    total_quantity: {
         type: Number,
-        required:true
+        required: true
     },
-    guarantee_quantity:{
-        type: Number,
-        default: 0
-    },
-    benefit_quantity:{
+    guarantee_quantity: {
         type: Number,
         default: 0
     },
-    discount:{
+    benefit_quantity: {
+        type: Number,
+        default: 0
+    },
+    type_discount: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Discount',
+    },
+    total_discount: {
         type: Number,
         default: null
     },
-    price:{
+    price: {
         type: Number,
         required: true
     }
@@ -34,4 +38,4 @@ let orderDetailSchema = new Schema({
 
 
 /* Exportamos el esquema de User */
-module.exports = mongoose.model( 'OrderDetail', orderDetailSchema ); //Usuario sera el nombre del modelo que contiene la configuracion de usuarioSchema
+module.exports = mongoose.model('OrderDetail', orderDetailSchema); //Usuario sera el nombre del modelo que contiene la configuracion de usuarioSchema
