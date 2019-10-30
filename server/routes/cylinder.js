@@ -1,49 +1,47 @@
 const express = require('express');
 const app = express();
 
-const Village = require('../../models/village');
+const Cylinder = require('../models/cylinder');
 
-app.get('/village', function (req, res) {
+app.get('/cylinder', function (req, res) {
     
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 1000;
     limite=Number(limite);
     
-    Village.find({enabled: true}, 'name')
+    Cylinder.find({enabled: true})
             .skip(desde)   
             .limit(limite)
-            .populate('sector', 'name')
-            .exec( (err, villages) =>{
+            .exec( (err, cylinders) =>{
                 if( err ){
                     return res.status(400).json({
                         ok:false,
                         err
                     });
                 }
-                Village.countDocuments({enabled: true}, (err,conteo)=>{
+                Cylinder.countDocuments({enabled: true}, (err,conteo)=>{
                     res.json({
                         ok:true,
-                        villages,
+                        cylinders,
                         cantidad: conteo
                     });
                 })
             });
 });
 
-app.get('/village/:id', (req,res)=>{
+app.get('/cylinder/:id', (req,res)=>{
 
     let id=req.params.id;
 
-    Village.findById(id)
-        .populate('sector', 'name')
-        .exec((err, villageDB)=>{
+    Cylinder.findById(id)
+        .exec((err, cylinderDB)=>{
             if(err){
                 return res.status(500).json({
                     ok:false,
                     err
                 });
             }
-            if(!villageDB){
+            if(!cylinderDB){
                 return res.status(400).json({
                     ok:false,
                     err:{
@@ -53,22 +51,24 @@ app.get('/village/:id', (req,res)=>{
             }
             res.json({
                 ok:true,
-                village: villageDB
+                cylinder: cylinderDB
             });
         });
 });
 
-app.post('/village', function (req, res) {
+app.post('/cylinder', function (req, res) {
 
     let body = req.body;
 
-    let village = new Village({
-        name: body.name,
-        sector: body.sector,
+    let cylinder = new Cylinder({
+        type: body.type,
+        capacity: body.capacity,
+        price: body.price,
+        price_guarantee: body.price_guarantee,
         enabled: body.enabled               
     });
 
-    village.save( (err,villageDB) => {
+    cylinder.save( (err,cylinderDB) => {
         if( err ){
             return res.status(400).json({
                 ok:false,
@@ -77,25 +77,25 @@ app.post('/village', function (req, res) {
         }
         res.status(201).json({
             ok: true,
-            village: villageDB
+            cylinder: cylinderDB
         })
     });
 }); 
 
 
-app.put('/village/:id', function(req, res){
+app.put('/cylinder/:id', function(req, res){
 
     let id= req.params.id;
     let body= req.body;
 
-    Village.findById(id, (err, villageDB)=>{
+    Cylinder.findById(id, (err, cylinderDB)=>{
         if(err){
             return res.status(500).json({
                 ok:false,
                 err
             });
         }
-        if(!villageDB){
+        if(!cylinderDB){
             return res.status(400).json({
                 ok:false,
                 err:{
@@ -103,11 +103,12 @@ app.put('/village/:id', function(req, res){
                 }
             });
         }
-        villageDB.name= body.name;
-        if(body.sector){
-            villageDB.sector= body.sector;
-        }
-        villageDB.save( (err, villageUpdate)=>{
+        cylinderDB.type= body.type;
+        cylinderDB.capacity= body.capacity;
+        cylinderDB.price= body.price;
+        cylinderDB.price_guarantee= body.price_guarantee;
+        cylinderDB.enabled= body.enabled;
+        cylinderDB.save( (err, cylinderUpdate)=>{
             if(err){
                 return res.status(500).json({
                     ok:false,
@@ -116,62 +117,38 @@ app.put('/village/:id', function(req, res){
             }
             res.json({
                 ok:true,
-                village: villageUpdate
+                cylinder: cylinderUpdate
             })
         });
     });
 });
 
-app.delete('/village/:id', function (req, res){
+app.delete('/cylinder/:id', function (req, res){
     let id = req.params.id;
     let cambiaEstado = {
         enabled: false
     };
 
-    Village.findByIdAndUpdate(id, cambiaEstado ,{new:true} ,(err, villageDeleted)=>{
+    Cylinder.findByIdAndUpdate(id, cambiaEstado ,{new:true} ,(err, cylinderDeleted)=>{
         if( err ){
             return res.status(400).json({
                 ok:false,
                 err
             });
         }
-        if( !villageDeleted ){
+        if( !cylinderDeleted ){
             return res.status(400).json({
                 ok:false,
                 err:{   
-                    message:'Villa no encontrada'
+                    message:'Cilindro no encontrado'
                 }
             });
         }
         res.json({
             ok:true,
-            village: villageDeleted
+            cylinder: cylinderDeleted
         });
     });
 });
-
-// =========================================================================================================== //
-// SERVICIOS ESPECIALES //
-// =========================================================================================================== //
-app.get('/sector/:id/villages',function (req, res) {
-    let id = req.params.id;
-    Village.find({sector: id, enabled:true},'name')
-            .exec( (err, villages) =>{
-                if( err ){
-                    return res.status(400).json({
-                        ok:false,
-                        err
-                    });
-                }
-                Village.countDocuments({sector: id, enabled:true}, (err,conteo)=>{
-                    res.json({
-                        ok:true,
-                        villages,
-                        cantidad: conteo
-                    });
-                })
-            });
-});
-
 
 module.exports=app;

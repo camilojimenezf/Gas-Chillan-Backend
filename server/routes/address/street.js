@@ -151,4 +151,27 @@ app.delete('/street/:id', function (req, res){
     });
 });
 
+// =========================================================================================================== //
+// SERVICIOS ESPECIALES //
+// =========================================================================================================== //
+app.get('/village/:id/streets',function (req, res) {
+    let id = req.params.id;
+    Street.find({village: id, enabled:true},'name')
+            .exec( (err, streets) =>{
+                if( err ){
+                    return res.status(400).json({
+                        ok:false,
+                        err
+                    });
+                }
+                Street.countDocuments({village: id, enabled:true}, (err,conteo)=>{
+                    res.json({
+                        ok:true,
+                        streets,
+                        cantidad: conteo
+                    });
+                })
+            });
+});
+
 module.exports=app;
