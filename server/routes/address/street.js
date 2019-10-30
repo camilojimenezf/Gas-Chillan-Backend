@@ -89,36 +89,24 @@ app.put('/street/:id', function(req, res){
     let id= req.params.id;
     let body= req.body;
 
-    Street.findById(id, (err, streetDB)=>{
-        if(err){
-            return res.status(500).json({
+    Street.findByIdAndUpdate(id, body,{new:true} ,(err, streetUpdated)=>{
+        if( err ){
+            return res.status(400).json({
                 ok:false,
                 err
             });
         }
-        if(!streetDB){
+        if( !streetUpdated ){
             return res.status(400).json({
                 ok:false,
-                err:{
-                    message: 'El ID no existe'
+                err:{   
+                    message:'Calle no encontrada'
                 }
             });
         }
-        streetDB.name= body.name;
-        if(body.village){
-            streetDB.village= body.village;
-        }
-        streetDB.save( (err, streetUpdate)=>{
-            if(err){
-                return res.status(500).json({
-                    ok:false,
-                    err
-                });
-            }
-            res.json({
-                ok:true,
-                street: streetUpdate
-            })
+        res.json({
+            ok:true,
+            street: streetUpdated
         });
     });
 });

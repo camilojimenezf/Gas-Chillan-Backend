@@ -88,37 +88,24 @@ app.put('/cylinder/:id', function(req, res){
     let id= req.params.id;
     let body= req.body;
 
-    Cylinder.findById(id, (err, cylinderDB)=>{
-        if(err){
-            return res.status(500).json({
+    Cylinder.findByIdAndUpdate(id, body,{new:true} ,(err, cylinderUpdated)=>{
+        if( err ){
+            return res.status(400).json({
                 ok:false,
                 err
             });
         }
-        if(!cylinderDB){
+        if( !cylinderUpdated ){
             return res.status(400).json({
                 ok:false,
-                err:{
-                    message: 'El ID no existe'
+                err:{   
+                    message:'Cilindro no encontrado'
                 }
             });
         }
-        cylinderDB.type= body.type;
-        cylinderDB.capacity= body.capacity;
-        cylinderDB.price= body.price;
-        cylinderDB.price_guarantee= body.price_guarantee;
-        cylinderDB.enabled= body.enabled;
-        cylinderDB.save( (err, cylinderUpdate)=>{
-            if(err){
-                return res.status(500).json({
-                    ok:false,
-                    err
-                });
-            }
-            res.json({
-                ok:true,
-                cylinder: cylinderUpdate
-            })
+        res.json({
+            ok:true,
+            cylinder: cylinderUpdated
         });
     });
 });

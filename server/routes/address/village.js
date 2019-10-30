@@ -88,36 +88,24 @@ app.put('/village/:id', function(req, res){
     let id= req.params.id;
     let body= req.body;
 
-    Village.findById(id, (err, villageDB)=>{
-        if(err){
-            return res.status(500).json({
+    Village.findByIdAndUpdate(id, body,{new:true} ,(err, villageUpdated)=>{
+        if( err ){
+            return res.status(400).json({
                 ok:false,
                 err
             });
         }
-        if(!villageDB){
+        if( !villageUpdated ){
             return res.status(400).json({
                 ok:false,
-                err:{
-                    message: 'El ID no existe'
+                err:{   
+                    message:'Villa no encontrada'
                 }
             });
         }
-        villageDB.name= body.name;
-        if(body.sector){
-            villageDB.sector= body.sector;
-        }
-        villageDB.save( (err, villageUpdate)=>{
-            if(err){
-                return res.status(500).json({
-                    ok:false,
-                    err
-                });
-            }
-            res.json({
-                ok:true,
-                village: villageUpdate
-            })
+        res.json({
+            ok:true,
+            village: villageUpdated
         });
     });
 });
