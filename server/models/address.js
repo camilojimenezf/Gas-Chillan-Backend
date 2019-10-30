@@ -34,7 +34,7 @@ let addressSchema = new Schema({
     }
 });
 
-addressSchema.index({village: 1, sector: 1, street:1, number:1 , departament:1}, { unique: true }) //combinacion de estos atributos no se puede repetir, no debemos duplicar una misma direccion en la bdd
+addressSchema.index({village: 1, sector: 1, street:1, number:1 , departament:1}, { unique: true }); //combinacion de estos atributos no se puede repetir, no debemos duplicar una misma direccion en la bdd
 
 addressSchema.plugin( uniqueValidator, {message: '{PATH} debe de ser único'});
 

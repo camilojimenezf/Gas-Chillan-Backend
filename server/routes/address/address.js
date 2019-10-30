@@ -94,41 +94,24 @@ app.put('/address/:id', function(req, res){
     let id= req.params.id;
     let body= req.body;
     
-    Address.findById(id, (err, addressDB)=>{
-        if(err){
-            return res.status(500).json({
+    Address.findByIdAndUpdate(id, body,{new:true} ,(err, addressUpdated)=>{
+        if( err ){
+            return res.status(400).json({
                 ok:false,
                 err
             });
         }
-        if(!addressDB){
+        if( !addressUpdated ){
             return res.status(400).json({
                 ok:false,
-                err:{
-                    message: 'El ID no existe'
+                err:{   
+                    message:'Direccion no encontrada'
                 }
             });
         }
-        
-        addressDB.number= body.number;
-        addressDB.departament= body.departament;
-        addressDB.description= body.description;
-        addressDB.sector= body.sector;
-        addressDB.village= body.village;
-        addressDB.street= body.street;
-        addressDB.enabled= body.enabled;
-
-        addressDB.save( (err, addressUpdate)=>{
-            if(err){
-                return res.status(500).json({
-                    ok:false,
-                    err
-                });
-            }
-            res.json({
-                ok:true,
-                sector: addressUpdate
-            })
+        res.json({
+            ok:true,
+            address: addressUpdated
         });
     });
 });
