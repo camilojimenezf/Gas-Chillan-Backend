@@ -19,7 +19,8 @@ let clientSchema = new Schema({
     },
     rut: {
         type: String,
-        unique: true
+        required: false,
+        unique: false
     },
     phone: {
         type: String,
@@ -35,15 +36,52 @@ let clientSchema = new Schema({
         required: [true, 'El tipo de clientes es obligatorio'],
         enum: tipoClientes
     },
-    address:[{
+    address: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Address'
+        ref: 'Address'
     }],
     enabled: {
         type: Boolean,
         default: true
     }
 
+
+});
+
+clientSchema.pre(['save', 'findByIdAndUpdate'], function(next, value) {
+
+    // Si el rut a guardar no viene, o viene vacio, continua
+    if (this.rut === undefined || this.rut === '') {
+
+        return next();
+
+    }
+
+    // Se verifica que el rut no este ya guardado
+    mongoose.models['Client'].findOne({ rut: this.rut }, (err, clientByRut) => {
+
+        if (err) {
+
+            return next(err)
+
+        }
+
+        // Si no lo encuentra, se puede registrar por lo tanto, continua
+        if (!clientByRut) {
+
+            next();
+
+        }
+
+        // Si lo encuentra lanza error
+        let error = {
+            message: 'El rut ya existe',
+            clientByRut
+        }
+
+        return next(error);
+
+    });
 
 });
 
