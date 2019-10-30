@@ -13,6 +13,8 @@ app.use( require('./client') );
 app.use( require('./order') );
 app.use( require('./order-detail') );
 app.use( require('./sale') );
+app.use( require('./discount') );
+
 
 
 

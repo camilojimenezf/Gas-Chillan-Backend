@@ -3,8 +3,8 @@ const app = express();
 
 const Order = require('../models/order');
 
-app.get('/order', function (req, res) {
-    
+app.get('/order', function(req, res) {
+
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 5;
     let enabled = req.query.habilitado || true;
@@ -33,41 +33,42 @@ app.get('/order', function (req, res) {
                     });
                 })
             });
+
 });
 
-app.get('/order/:id', (req,res)=>{
+app.get('/order/:id', (req, res) => {
 
-    let id=req.params.id;
+    let id = req.params.id;
 
     Order.findById(id)
-        .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+        .populate({ path: 'address', populate: { path: 'sector village street', select: 'name' } })
         .populate('recepcionist', 'name surname')
         .populate('seller', 'name surname')
         .populate('client', 'name surname phone email client_type')
         .populate('orderDetail')
-        .exec((err,orderDB)=>{
-            if(err){
+        .exec((err, orderDB) => {
+            if (err) {
                 return res.status(500).json({
-                    ok:false,
+                    ok: false,
                     err
                 });
             }
-            if(!orderDB){
+            if (!orderDB) {
                 return res.status(400).json({
-                    ok:false,
-                    err:{
-                        message:'ID no existe'
+                    ok: false,
+                    err: {
+                        message: 'ID no existe'
                     }
                 });
             }
             res.json({
-                ok:true,
+                ok: true,
                 order: orderDB
             });
         });
 });
 
-app.post('/order', function (req, res) {
+app.post('/order', function(req, res) {
 
     let body = req.body;
 
@@ -78,13 +79,13 @@ app.post('/order', function (req, res) {
         address: body.address,
         priority: body.priority,
         order_status: body.order_status,
-        enabled: body.enabled               
+        enabled: body.enabled
     });
 
-    order.save( (err,orderDB) => {
-        if( err ){
+    order.save((err, orderDB) => {
+        if (err) {
             return res.status(400).json({
-                ok:false,
+                ok: false,
                 err
             });
         }
@@ -93,59 +94,59 @@ app.post('/order', function (req, res) {
             order: orderDB
         })
     });
-}); 
+});
 
 
-app.put('/order/:id', function(req, res){
+app.put('/order/:id', function(req, res) {
 
-    let id= req.params.id;
-    let body= req.body;
+    let id = req.params.id;
+    let body = req.body;
 
-    Order.findByIdAndUpdate(id, body,{new:true} ,(err, orderUpdated)=>{
-        if( err ){
+    Order.findByIdAndUpdate(id, body, { new: true }, (err, orderUpdated) => {
+        if (err) {
             return res.status(400).json({
-                ok:false,
+                ok: false,
                 err
             });
         }
-        if( !orderUpdated ){
+        if (!orderUpdated) {
             return res.status(400).json({
-                ok:false,
-                err:{   
-                    message:'Order no encontrado'
+                ok: false,
+                err: {
+                    message: 'Order no encontrado'
                 }
             });
         }
         res.json({
-            ok:true,
+            ok: true,
             order: orderUpdated
         });
     });
 });
 
-app.delete('/order/:id', function (req, res){
+app.delete('/order/:id', function(req, res) {
     let id = req.params.id;
     let cambiaEstado = {
         enabled: false
     };
 
-    Order.findByIdAndUpdate(id, cambiaEstado ,{new:true} ,(err, orderDeleted)=>{
-        if( err ){
+    Order.findByIdAndUpdate(id, cambiaEstado, { new: true }, (err, orderDeleted) => {
+        if (err) {
             return res.status(400).json({
-                ok:false,
+                ok: false,
                 err
             });
         }
-        if( !orderDeleted ){
+        if (!orderDeleted) {
             return res.status(400).json({
-                ok:false,
-                err:{   
-                    message:'Order no encontrado'
+                ok: false,
+                err: {
+                    message: 'Order no encontrado'
                 }
             });
         }
         res.json({
-            ok:true,
+            ok: true,
             order: orderDeleted
         });
     });
@@ -157,4 +158,4 @@ app.delete('/order/:id', function (req, res){
 
 
 
-module.exports=app;
+module.exports = app;
