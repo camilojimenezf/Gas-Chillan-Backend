@@ -11,7 +11,7 @@ const Client = require('../models/client');
 /*=================================================================================================================================*/
 // Obtener todos los clientes
 /*=================================================================================================================================*/
-app.get('/clients', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.get('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
 
     //Si viene este parametro opcional, buscara los clientes borrados (deshabilitados)
     let habilitado = req.query.enabled || true;
@@ -22,6 +22,7 @@ app.get('/clients', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
     Client.find({ enabled: habilitado }, 'name surname phone rut email enabled client_type')
         .skip(desde)
         .limit(limite)
+        .populate({path:'address',populate:{path:'sector village street',select:'name'}})
         .exec((err, clients) => {
             if (err) {
                 return res.status(400).json({
@@ -48,7 +49,9 @@ app.get('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
 
     let id = req.params.id;
 
-    Client.findById(id, (err, clientDB) => {
+    Client.findById(id)
+            .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+            .exec( (err, clientDB) => {
 
         if (err) {
             return res.status(500).json({
@@ -70,9 +73,6 @@ app.get('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
             ok: true,
             client: clientDB
         });
-
-
-
     });
 
 });
@@ -126,7 +126,8 @@ app.post('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
         rut: body.rut,
         phone: body.phone,
         email: body.email,
-        client_type: body.client_type
+        client_type: body.client_type,
+        address:body.address
     });
 
     client.save((err, clientDB) => {

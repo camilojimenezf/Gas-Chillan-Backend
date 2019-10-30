@@ -60,7 +60,7 @@ app.get('/user/:id', verificaToken, verificaAdmin_Recep_Role, (req, res) => {
         });
 });
 
-app.post('/user', verificaToken, verificaAdmin_Recep_Role, function(req, res) {
+app.post('/user', function(req, res) {
 
     let body = req.body;
 

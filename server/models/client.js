@@ -35,6 +35,10 @@ let clientSchema = new Schema({
         required: [true, 'El tipo de clientes es obligatorio'],
         enum: tipoClientes
     },
+    address:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Address'
+    }],
     enabled: {
         type: Boolean,
         default: true
