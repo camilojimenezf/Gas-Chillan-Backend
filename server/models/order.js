@@ -52,11 +52,10 @@ let orderSchema = new Schema({
         enum: estadosValidos
     },
     created_at:{
-        type: Date
+        type: String
     },
     confirmed_at:{
-        type: Date,
-        default:null
+        type: String
     },
     enabled:{
         type: Boolean,
@@ -67,7 +66,7 @@ let orderSchema = new Schema({
 
 orderSchema.pre('save', function (next) {
     
-    let time=moment.tz('Chile/Continental').format("YYYY-MM-DDTHH:MM:ss"); //CORREGIR HORA (ENTREGA 3 HORAS MAS TARDE)
+    let time=moment().tz('America/Santiago').format(); 
     this.created_at=time;
     
     next();
