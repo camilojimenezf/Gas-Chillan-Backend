@@ -65,9 +65,11 @@ let orderSchema = new Schema({
 });
 
 
-orderSchema.pre('save', function (next) { 
-    let time=moment.tz('America/Santiago').format("YYYY-MM-DDTHH:MM:ss"); //CORREGIR HORA (ENTREGA 3 HORAS MAS TARDE)
+orderSchema.pre('save', function (next) {
+    
+    let time=moment.tz('Chile/Continental').format("YYYY-MM-DDTHH:MM:ss"); //CORREGIR HORA (ENTREGA 3 HORAS MAS TARDE)
     this.created_at=time;
+    
     next();
 });
 
