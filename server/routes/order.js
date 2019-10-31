@@ -156,6 +156,38 @@ app.delete('/order/:id', function(req, res) {
 // SERVICIOS ESPECIALES //
 // =========================================================================================================== //
 
+app.get('/order/seller/:id_seller', (req, res)=>{
+
+    let id = req.params.id_seller;
+    let desde = Number(req.query.desde) || 0;
+    let limite = req.query.limite || 5;
+    let enabled = req.query.habilitado || true;
+    limite=Number(limite);
+
+    Order.find({enabled: enabled, seller: id})
+    .skip(desde)   
+    .limit(limite)
+    .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+    .populate('recepcionist', 'name surname')
+    .populate('seller', 'name surname')
+    .populate('client', 'name surname phone email client_type')
+    .populate('orderDetail')
+    .exec( (err, orders) =>{
+        if( err ){
+            return res.status(400).json({
+                ok:false,
+                err
+            });
+        }
+        Order.countDocuments({enabled: enabled, seller: id}, (err,conteo)=>{
+            res.json({
+                ok:true,
+                orders,
+                cantidad: conteo
+            });
+        })
+    });
+});
 
 
 module.exports = app;
