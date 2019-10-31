@@ -4,6 +4,10 @@ const app = express();
 const OrderDetail = require('../models/order-detail');
 const Order = require('../models/order');
 
+
+/*=================================================================================================================================*/
+// Obtener todos los detalles de pedido
+/*=================================================================================================================================*/
 app.get('/order-detail', function(req, res) {
 
     let desde = Number(req.query.desde) || 0;
@@ -32,6 +36,9 @@ app.get('/order-detail', function(req, res) {
         });
 });
 
+/*=================================================================================================================================*/
+// Obtener un detalle de pedido por su id
+/*=================================================================================================================================*/
 app.get('/order-detail/:id', (req, res) => {
 
     let id = req.params.id;
@@ -60,6 +67,9 @@ app.get('/order-detail/:id', (req, res) => {
         });
 });
 
+/*=================================================================================================================================*/
+// Crear un detalle de pedido
+/*=================================================================================================================================*/
 app.post('/order-detail/:id_order', function(req, res) {
 
     let body = req.body;
@@ -88,6 +98,10 @@ app.post('/order-detail/:id_order', function(req, res) {
     });
 });
 
+
+/*=================================================================================================================================*/
+// Actualizar/Editar un detalle de pedido
+/*=================================================================================================================================*/
 app.put('/order-detail/:id', function(req, res) {
 
     let id = req.params.id;
@@ -114,6 +128,9 @@ app.put('/order-detail/:id', function(req, res) {
     });
 });
 
+/*=================================================================================================================================*/
+// Borrar un detalle de pedido
+/*=================================================================================================================================*/
 app.delete('/order-detail/:id', function(req, res) {
     let id = req.params.id;
 
@@ -177,5 +194,59 @@ function vincularDetalleOrden(detalle, id, res) {
         });
     });
 }
+
+/*=================================================================================================================================*/
+// Obtener todos los detalles asociados a un tipo de descuento
+/*=================================================================================================================================*/
+app.get('/order-detail/disc/:id_disc', (req, res) => {
+
+    let id = req.params.id_disc;
+
+    OrderDetail.find({ type_discount: id })
+        .populate('type_discount', 'type description')
+        .exec((err, orderDetailDB) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                orderDetailDB
+            });
+
+        });
+});
+
+/*=================================================================================================================================*/
+// Obtener todos los detalles asociados a un tipo de cilindro
+/*=================================================================================================================================*/
+app.get('/order-detail/cylin/:id_cylin', (req, res) => {
+
+    let id = req.params.id_cylin;
+
+    OrderDetail.find({ cylinder: id })
+        .populate('cylinder', 'type capacity price price_guarantee')
+        .exec((err, cylinderDB) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                cylinderDB
+            });
+
+        });
+});
+
+
 
 module.exports = app;
