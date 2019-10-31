@@ -34,7 +34,7 @@ let saleSchema = new Schema({
         enum: tiposValidos
     },
     created_at:{
-        type: Date
+        type: String
     },
     enabled:{
         type: Boolean,
@@ -44,7 +44,7 @@ let saleSchema = new Schema({
 
 
 saleSchema.pre('save', function (next) { 
-    let time=moment.tz('America/Santiago').format("YYYY-MM-DDTHH:MM:ss"); //CORREGIR HORA (ENTREGA 3 HORAS MAS TARDE)
+    let time=moment.tz('America/Santiago').format();
     this.created_at=time;
     next();
 });
