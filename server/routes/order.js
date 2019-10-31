@@ -156,15 +156,18 @@ app.delete('/order/:id', function(req, res) {
 // SERVICIOS ESPECIALES //
 // =========================================================================================================== //
 
-app.get('/order/seller/:id_seller', (req, res)=>{
+//Este servicio entrega todos los order relacionados a un user (seller,recepcionist o client), dado el id del user
+app.get('/order/:tipo/:id', (req, res)=>{
 
-    let id = req.params.id_seller;
+    let id = req.params.id;
+    let tipo = req.params.tipo;
     let desde = Number(req.query.desde) || 0;
     let limite = req.query.limite || 5;
     let enabled = req.query.habilitado || true;
     limite=Number(limite);
 
-    Order.find({enabled: enabled, seller: id})
+    Order.find({enabled: enabled})
+    .where(tipo).equals(id)
     .skip(desde)   
     .limit(limite)
     .populate({path:'address',populate:{path:'sector village street',select:'name'}})
@@ -179,7 +182,80 @@ app.get('/order/seller/:id_seller', (req, res)=>{
                 err
             });
         }
-        Order.countDocuments({enabled: enabled, seller: id}, (err,conteo)=>{
+        Order.countDocuments({enabled: enabled})
+        .where(tipo).equals(id)
+        .exec( (err,conteo)=>{
+            res.json({
+                ok:true,
+                orders,
+                cantidad: conteo
+            });
+        })
+    });
+});
+//este servicio entrega todas las ordenes con un estado especifico
+app.get('/status/order/:status', (req,res)=>{
+    let status = req.params.status;
+    let desde = Number(req.query.desde) || 0;
+    let limite = req.query.limite || 5;
+    let enabled = req.query.habilitado || true;
+    limite=Number(limite);
+
+    console.log(status);
+
+    Order.find({enabled: enabled, order_status:status})
+    .skip(desde)   
+    .limit(limite)
+    .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+    .populate('recepcionist', 'name surname')
+    .populate('seller', 'name surname')
+    .populate('client', 'name surname phone email client_type')
+    .populate('orderDetail')
+    .exec( (err, orders) =>{
+        if( err ){
+            return res.status(400).json({
+                ok:false,
+                err
+            });
+        }
+        Order.countDocuments({enabled: enabled, order_status: status},(err,conteo)=>{
+            res.json({
+                ok:true,
+                orders,
+                cantidad: conteo
+            });
+        })
+    });
+});
+//este servicio entrega todas las ordenes de un tipo de usuario con un estado especifico
+app.get('/status/order/:status/:tipo/:id', (req, res)=>{
+    let status = req.params.status;
+    let id = req.params.id;
+    let tipo = req.params.tipo;
+    let desde = Number(req.query.desde) || 0;
+    let limite = req.query.limite || 5;
+    let enabled = req.query.habilitado || true;
+    limite=Number(limite);
+
+    Order.find({enabled: enabled, order_status:status })
+    .where(tipo).equals(id)
+    .skip(desde)   
+    .limit(limite)
+    .populate({path:'address',populate:{path:'sector village street',select:'name'}})
+    .populate('recepcionist', 'name surname')
+    .populate('seller', 'name surname')
+    .populate('client', 'name surname phone email client_type')
+    .populate('orderDetail')
+    .exec( (err, orders) =>{
+        if( err ){
+            return res.status(400).json({
+                ok:false,
+                err
+            });
+        }
+        Order.countDocuments({enabled: enabled, order_status:status })
+        .where(tipo).equals(id)
+        .exec( (err,conteo)=>{
             res.json({
                 ok:true,
                 orders,
