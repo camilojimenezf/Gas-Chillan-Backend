@@ -23,7 +23,7 @@ app.get('/user', function(req, res) {
                     err
                 });
             }
-            User.countDocuments({ enabled: true }, (err, conteo) => {
+            User.countDocuments({ enabled: enabled }, (err, conteo) => {
                 res.json({
                     ok: true,
                     usuarios,
