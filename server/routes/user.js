@@ -33,7 +33,7 @@ app.get('/user', function(req, res) {
         });
 });
 
-app.get('/user/:id', verificaToken, verificaAdmin_Recep_Role, (req, res) => {
+app.get('/user/:id', (req, res) => {
 
     let id = req.params.id;
 
@@ -88,7 +88,7 @@ app.post('/user', function(req, res) {
     });
 });
 
-app.put('/user/:id', verificaToken, verificaAdmin_Recep_Role, function(req, res) {
+app.put('/user/:id', function(req, res) {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['name', 'surname', 'img', 'role', 'enabled']);
@@ -109,7 +109,7 @@ app.put('/user/:id', verificaToken, verificaAdmin_Recep_Role, function(req, res)
     });
 });
 
-app.delete('/user/:id', verificaToken, verificaAdmin_Recep_Role, function(req, res) {
+app.delete('/user/:id', function(req, res) {
     let id = req.params.id;
     let cambiaEstado = {
         enabled: false
