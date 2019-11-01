@@ -236,5 +236,34 @@ app.delete('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) 
 
 });
 
+/*=================================================================================================================================*/
+// Buscar Clientes
+/*=================================================================================================================================*/
+
+app.get('/client/search/:term', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+
+    let termino = req.params.term;
+
+    let regex = new RegExp(termino, 'i');
+
+    Client.find({ name: regex })
+        .exec((err, clients) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                clients
+            });
+
+        });
+
+});
+
 
 module.exports = app;
