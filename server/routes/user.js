@@ -69,7 +69,7 @@ app.post('/user', function(req, res) {
         surname: body.surname,
         email: body.email,
         img: body.img,
-        password: body.password, //lo sincronizamos de manera sincrona (sin usar callbacks ni promesas) y el segundo parametro
+        password: bcrypt.hashSync(body.password, 10), //lo sincronizamos de manera sincrona (sin usar callbacks ni promesas) y el segundo parametro
         role: body.role,
         enabled: body.enabled //corresponde al número de veces que se le hara hash                   
     });

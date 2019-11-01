@@ -57,17 +57,17 @@ userSchema.plugin( uniqueValidator, {message: '{PATH} debe de ser único'}); //P
 /**
  * Hacemos hashing a la password antes de guardar el nuevo usuario
  */
-userSchema.pre('save', function (next) { 
-    bcrypt.hash(this.password,10, (err,res)=>{
-        console.log(res);
-        this.password=res;
-        if(err){
-            next(err);
-        }else{
-            next();
-        }
-    });
-});
+// userSchema.pre('save', function (next) { 
+//     bcrypt.hash(this.password,10, (err,res)=>{
+//         console.log(res);
+//         this.password=res;
+//         if(err){
+//             next(err);
+//         }else{
+//             next();
+//         }
+//     });
+// });
 
 /* Exportamos el esquema de User */
 module.exports = mongoose.model( 'User', userSchema ); //Usuario sera el nombre del modelo que contiene la configuracion de usuarioSchema
