@@ -137,4 +137,32 @@ app.delete('/user/:id', function(req, res) {
     });
 });
 
+app.get('/user_role', function(req, res) {
+
+    let desde = Number(req.query.desde) || 0;
+    let limite = req.query.limite || 5;
+    let enabled = req.query.habilitado || true;
+    let role = req.query.rol || 'SELLER_ROLE';
+    limite = Number(limite);
+
+    User.find({ enabled: enabled, role: role }, 'name surname email role enabled img')
+        .skip(desde)
+        .limit(limite)
+        .exec((err, usuarios) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+            User.countDocuments({ enabled: enabled, role: role }, (err, conteo) => {
+                res.json({
+                    ok: true,
+                    usuarios,
+                    cantidad: conteo
+                });
+            });
+        });
+});
+
 module.exports = app;
