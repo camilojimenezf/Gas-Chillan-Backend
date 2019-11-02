@@ -247,6 +247,33 @@ app.get('/client/search/:term', (req, res) => {
     let regex = new RegExp(termino, 'i');
 
     Client.find({ name: regex })
+        .populate('address')
+        .exec((err, clients) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                clients
+            });
+
+        });
+
+});
+
+app.get('/client/phone/:phone', (req, res) => {
+
+    let termino = req.params.phone;
+
+    let regex = new RegExp(termino, 'i');
+
+    Client.find({ phone: regex })
+        .populate('address')
         .exec((err, clients) => {
 
             if (err) {
