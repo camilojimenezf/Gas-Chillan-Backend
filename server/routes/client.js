@@ -11,7 +11,7 @@ const Client = require('../models/client');
 /*=================================================================================================================================*/
 // Obtener todos los clientes
 /*=================================================================================================================================*/
-app.get('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.get('/client', (req, res) => {
 
     //Si viene este parametro opcional, buscara los clientes borrados (deshabilitados)
     let habilitado = req.query.enabled || true;
@@ -45,7 +45,7 @@ app.get('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
 // Obtener cliente por su id
 /*=================================================================================================================================*/
 
-app.get('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.get('/client/:id', (req, res) => {
 
     let id = req.params.id;
 
@@ -80,7 +80,7 @@ app.get('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
 /*=================================================================================================================================*/
 // Actualizar cliente por su id
 /*=================================================================================================================================*/
-app.put('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.put('/client/:id', (req, res) => {
 
     let id = req.params.id;
     let body = req.body;
@@ -166,7 +166,7 @@ app.put('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => 
 /*=================================================================================================================================*/
 // Crear un cliente
 /*=================================================================================================================================*/
-app.post('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.post('/client', (req, res) => {
 
     let body = req.body;
 
@@ -200,7 +200,7 @@ app.post('/client', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
 /*=================================================================================================================================*/
 // Borrar cliente por su id
 /*=================================================================================================================================*/
-app.delete('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.delete('/client/:id', (req, res) => {
 
     let id = req.params.id;
 
@@ -240,7 +240,7 @@ app.delete('/client/:id', [verificaToken, verificaAdmin_Recep_Role], (req, res) 
 // Buscar Clientes
 /*=================================================================================================================================*/
 
-app.get('/client/search/:term', [verificaToken, verificaAdmin_Recep_Role], (req, res) => {
+app.get('/client/search/:term', (req, res) => {
 
     let termino = req.params.term;
 

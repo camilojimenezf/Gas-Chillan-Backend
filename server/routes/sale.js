@@ -61,7 +61,7 @@ app.get('/sale/:id', (req,res)=>{
         });
 });
 
-app.post('/sale/:id_order', async function (req, res) {
+app.post('/sale/:id_order', function (req, res) {
 
     let body = req.body;
     let id_order = req.params.id_order;
