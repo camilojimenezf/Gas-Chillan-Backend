@@ -21,6 +21,7 @@ let verificaToken = (req, res, next) => {
             })
         }
 
+
         // agrega la propiedad usuario a la petición
         req.user = decoded.user;
 

@@ -165,4 +165,58 @@ app.get('/user_role', function(req, res) {
         });
 });
 
+app.put('/user-password', verificaToken, (req, res)=>{
+    //password: bcrypt.hashSync(body.password, 10), 
+    let body = req.body;
+    let id_user = req.user._id;
+
+    let passwordActual = body.passwordActual;
+    let passwordNueva= body.passwordNueva;
+
+    User.findById(id_user, (err, userDB)=>{
+
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        }
+        if(!userDB){
+            return res.status(400).json({
+                ok: false,
+                err:{
+                    message:'Usuario no encontrado'
+                }
+            });
+        }
+
+        if (!bcrypt.compareSync(passwordActual, userDB.password)) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'Error (la password actual es incorrecta)'
+                }
+            });
+        }
+        //El usuario ya esta válidado por su token y la password que ingreso es la que corresponde
+        //se procede a cambiar la password
+
+        userDB.password=bcrypt.hashSync(passwordNueva, 10);
+        userDB.save((err, userDB) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+            res.status(201).json({
+                ok: true,
+                user: userDB
+            });
+        });
+
+    });
+
+});
+
 module.exports = app;
