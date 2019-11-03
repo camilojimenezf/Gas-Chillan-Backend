@@ -15,7 +15,8 @@ app.get('/sale', function (req, res) {
     Sale.find({enabled: enabled})
             .skip(desde)   
             .limit(limite)
-            .populate('order')
+            .populate({ path: 'order', populate: { path: 'orderDetail'} })
+            .populate('seller')
             .exec( (err, sales) =>{
                 if( err ){
                     return res.status(400).json({
@@ -38,7 +39,8 @@ app.get('/sale/:id', (req,res)=>{
     let id=req.params.id;
 
     Sale.findById(id)
-        .populate('order')
+        .populate({ path: 'order', populate: { path: 'orderDetail'} })
+        .populate('seller')
         .exec((err,saleDB)=>{
             if(err){
                 return res.status(500).json({
@@ -68,6 +70,7 @@ app.post('/sale/:id_order', function (req, res) {
 
     let sale = new Sale({
         order: id_order,
+        seller: body.seller,
         subtotal: body.subtotal,
         discount_total: body.discount_total,
         sale_total: body.sale_total,
@@ -110,7 +113,7 @@ app.put('/sale/:id', function(req, res){
         }
         res.json({
             ok:true,
-            order: saleUpdated
+            sale: saleUpdated
         });
     });
 });

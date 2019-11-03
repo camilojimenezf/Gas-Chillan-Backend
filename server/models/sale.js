@@ -1,6 +1,7 @@
 /* Require de Mongoose y Unique Validator*/
 const mongoose = require('mongoose');
 const moment = require('moment-timezone');
+const uniqueValidator = require('mongoose-unique-validator');
 
 let tiposValidos={
     values: ['EFECTIVO','DEBITO','CREDITO','CHEQUE','VALE'],
@@ -15,6 +16,12 @@ let saleSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         required:true,
         ref:'Order',
+        unique:true
+    },
+    seller:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:'User',
     },
     subtotal:{
         type: Number,
@@ -48,6 +55,9 @@ saleSchema.pre('save', function (next) {
     this.created_at=time;
     next();
 });
+
+saleSchema.plugin( uniqueValidator, {message: '{PATH} debe de ser único'}); //PATH hace referencia al campo que no cumple la validación
+
 
 
 /* Exportamos el esquema de User */
