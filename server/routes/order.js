@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-
+const _ = require('underscore');
 const Order = require('../models/order');
 
 app.get('/order', function(req, res) {
@@ -100,7 +100,7 @@ app.post('/order', function(req, res) {
 app.put('/order/:id', function(req, res) {
 
     let id = req.params.id;
-    let body = req.body;
+    let body = _.pick(req.body, ['receipcionist', 'seller', 'client', 'address', 'priority','order_status','enabled']);
 
     Order.findByIdAndUpdate(id, body, { new: true }, (err, orderUpdated) => {
         if (err) {
