@@ -17,7 +17,7 @@ app.get('/order', function(req, res) {
             .populate('recepcionist', 'name surname')
             .populate('seller', 'name surname')
             .populate('client', 'name surname phone email client_type')
-            .populate('orderDetail')
+            .populate({path:'orderDetail',populate:{ path:'cylinder'}})
             .exec( (err, orders) =>{
                 if( err ){
                     return res.status(400).json({
