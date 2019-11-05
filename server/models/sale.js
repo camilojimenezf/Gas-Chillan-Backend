@@ -35,6 +35,10 @@ let saleSchema = new Schema({
         type: Number,
         required:true
     },
+    sale_status:{
+        type:Boolean,
+        default:false
+    },
     payment_type:{
         type: String,
         default:'EFECTIVO',

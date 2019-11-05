@@ -70,6 +70,7 @@ app.post('/sale/:id_order', function (req, res) {
 
     let sale = new Sale({
         order: id_order,
+        sale_total: body.sale_total,
         seller: body.seller,
         subtotal: body.subtotal,
         discount_total: body.discount_total,
@@ -165,6 +166,7 @@ function confirmarPedido(id_order,saleDB,res){
                 }
             });
         }
+        orderDB.order_status='CONFIRMADO';
         orderDB.confirmed_at = moment.tz('America/Santiago').format("YYYY-MM-DDTHH:MM:ss");
         orderDB.save((err, orderUpdated)=>{
             if(err){

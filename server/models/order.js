@@ -9,7 +9,7 @@ let prioridadValida={
 };
 
 let estadosValidos={
-    values: ['SIN_ASIGNAR','ASIGNADO','EN_CAMINO','CONFIRMADO','CANCELADO','RENDIDO'],
+    values: ['SIN_ASIGNAR','ASIGNADO','EN_CAMINO','CONFIRMADO','CANCELADO'],
     message:'{VALUE} no es un estado válido'  //VALUE toma el valor de lo que envie el usuario
 };
 
