@@ -219,4 +219,33 @@ app.put('/user-password', verificaToken, (req, res)=>{
 
 });
 
+//Buscar users
+
+app.get('/user/search/:term', (req, res) => {
+
+    let limite = req.query.limite || 50;
+    let termino = req.params.term;
+    let regex = new RegExp(termino, 'i');
+    let enabled = req.query.habilitado || true;
+
+    User.find({ name: regex, enabled: enabled })
+        .limit(limite)
+        .exec((err, users) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                users
+            });
+
+        });
+
+});
+
 module.exports = app;
