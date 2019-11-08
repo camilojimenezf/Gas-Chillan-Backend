@@ -204,9 +204,10 @@ app.get('/status/order/:status', (req,res)=>{
     let enabled = req.query.habilitado || true;
     limite=Number(limite);
 
-    console.log(status);
+    let start = req.query.start || new Date('2000-01-01').toISOString();
+    let end = req.query.end || new Date().toISOString();
 
-    Order.find({enabled: enabled, order_status:status})
+    Order.find({enabled: enabled, order_status:status, created_at: { '$gte': start, '$lte': end }})
     .skip(desde)   
     .limit(limite)
     .populate({path:'address',populate:{path:'sector village street',select:'name'}})
@@ -221,7 +222,7 @@ app.get('/status/order/:status', (req,res)=>{
                 err
             });
         }
-        Order.countDocuments({enabled: enabled, order_status: status},(err,conteo)=>{
+        Order.countDocuments({enabled: enabled, order_status: status,created_at: { '$gte': start, '$lte': end }},(err,conteo)=>{
             res.json({
                 ok:true,
                 orders,
