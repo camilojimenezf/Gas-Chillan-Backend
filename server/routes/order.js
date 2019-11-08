@@ -169,7 +169,10 @@ app.get('/order/:tipo/:id', (req, res)=>{
     let enabled = req.query.habilitado || true;
     limite=Number(limite);
 
-    Order.find({enabled: enabled})
+    let start = req.query.start || new Date('2000-01-01').toISOString();
+    let end = req.query.end || new Date().toISOString();
+
+    Order.find({enabled: enabled, created_at: { '$gte': start, '$lte': end }})
     .where(tipo).equals(id)
     .skip(desde)   
     .limit(limite)
@@ -177,7 +180,7 @@ app.get('/order/:tipo/:id', (req, res)=>{
     .populate('recepcionist', 'name surname')
     .populate('seller', 'name surname')
     .populate('client', 'name surname phone email client_type')
-    .populate('orderDetail')
+    .populate({path:'orderDetail',populate:{ path:'cylinder'}})
     .exec( (err, orders) =>{
         if( err ){
             return res.status(400).json({
@@ -185,7 +188,7 @@ app.get('/order/:tipo/:id', (req, res)=>{
                 err
             });
         }
-        Order.countDocuments({enabled: enabled})
+        Order.countDocuments({enabled: enabled, , created_at: { '$gte': start, '$lte': end }})
         .where(tipo).equals(id)
         .exec( (err,conteo)=>{
             res.json({
@@ -214,7 +217,7 @@ app.get('/status/order/:status', (req,res)=>{
     .populate('recepcionist', 'name surname')
     .populate('seller', 'name surname')
     .populate('client', 'name surname phone email client_type')
-    .populate('orderDetail')
+    .populate({path:'orderDetail',populate:{ path:'cylinder'}})
     .exec( (err, orders) =>{
         if( err ){
             return res.status(400).json({
@@ -241,7 +244,10 @@ app.get('/status/order/:status/:tipo/:id', (req, res)=>{
     let enabled = req.query.habilitado || true;
     limite=Number(limite);
 
-    Order.find({enabled: enabled, order_status:status })
+    let start = req.query.start || new Date('2000-01-01').toISOString();
+    let end = req.query.end || new Date().toISOString();
+
+    Order.find({enabled: enabled, order_status:status, created_at: { '$gte': start, '$lte': end } })
     .where(tipo).equals(id)
     .skip(desde)   
     .limit(limite)
@@ -249,7 +255,7 @@ app.get('/status/order/:status/:tipo/:id', (req, res)=>{
     .populate('recepcionist', 'name surname')
     .populate('seller', 'name surname')
     .populate('client', 'name surname phone email client_type')
-    .populate('orderDetail')
+    .populate({path:'orderDetail',populate:{ path:'cylinder'}})
     .exec( (err, orders) =>{
         if( err ){
             return res.status(400).json({
@@ -257,7 +263,7 @@ app.get('/status/order/:status/:tipo/:id', (req, res)=>{
                 err
             });
         }
-        Order.countDocuments({enabled: enabled, order_status:status })
+        Order.countDocuments({enabled: enabled, order_status:status, created_at: { '$gte': start, '$lte': end } })
         .where(tipo).equals(id)
         .exec( (err,conteo)=>{
             res.json({
