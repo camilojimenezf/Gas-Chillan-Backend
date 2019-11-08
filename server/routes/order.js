@@ -188,7 +188,7 @@ app.get('/order/:tipo/:id', (req, res)=>{
                 err
             });
         }
-        Order.countDocuments({enabled: enabled, , created_at: { '$gte': start, '$lte': end }})
+        Order.countDocuments({enabled: enabled, created_at: { '$gte': start, '$lte': end }})
         .where(tipo).equals(id)
         .exec( (err,conteo)=>{
             res.json({
