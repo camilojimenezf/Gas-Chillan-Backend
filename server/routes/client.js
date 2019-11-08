@@ -96,6 +96,7 @@ app.put('/client/:id', (req, res) => {
     }
 
     // Si se quiere actualizar el rut, debemos verificar que el rut no este registrado en la bdd
+    console.log(body.rut);
     if (body.rut !== undefined) {
 
         Client.findOne({ rut: body.rut }, (err, clientByRut) => {
@@ -142,7 +143,7 @@ app.put('/client/:id', (req, res) => {
     } else { // si no viene el rut
 
 
-        Client.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, clientDB) => {
+        Client.findByIdAndUpdate(id, body, { new: true }, (err, clientDB) => {
 
             if (err) {
                 return res.status(400).json({
