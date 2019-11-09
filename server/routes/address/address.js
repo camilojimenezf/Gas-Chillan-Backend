@@ -143,6 +143,35 @@ app.delete('/address/:id', function (req, res){
     });
 });
 
+// =========================================================================================================== //
+// SERVICIOS ESPECIALES //
+// =========================================================================================================== //
+app.get('/search-address/sector/:id_sector/village/:id_village/street/:id_street', (req,res)=>{
 
+    let id_sector = req.params.id_sector;
+    let id_village = req.params.id_village;
+    let id_street = req.params.id_street;
+
+    Address.find({enabled: true, sector: id_sector, village: id_village, street: id_street})
+            .populate('sector', 'name')
+            .populate('village', 'name')
+            .populate('street','name')
+            .exec( (err, addresses) =>{
+                if( err ){
+                    return res.status(400).json({
+                        ok:false,
+                        err
+                    });
+                }
+                Address.countDocuments({enabled: true, sector: id_sector, village: id_village, street: id_street}, (err,conteo)=>{
+                    res.json({
+                        ok:true,
+                        addresses,
+                        cantidad: conteo
+                    });
+                })
+            });
+
+});
 
 module.exports=app;

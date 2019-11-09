@@ -144,8 +144,8 @@ app.delete('/street/:id', function(req, res) {
 // =========================================================================================================== //
 // SERVICIOS ESPECIALES //
 // =========================================================================================================== //
-app.get('/village/:id/streets', function(req, res) {
-    let id = req.params.id;
+app.get('/village/:id_village/streets', function(req, res) {
+    let id = req.params.id_village;
     Street.find({ village: id, enabled: true }, 'name')
         .exec((err, streets) => {
             if (err) {

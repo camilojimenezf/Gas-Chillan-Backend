@@ -143,8 +143,8 @@ app.delete('/village/:id', function(req, res) {
 // =========================================================================================================== //
 // SERVICIOS ESPECIALES //
 // =========================================================================================================== //
-app.get('/sector/:id/villages', function(req, res) {
-    let id = req.params.id;
+app.get('/sector/:id_sector/villages', function(req, res) {
+    let id = req.params.id_sector;
     Village.find({ sector: id, enabled: true }, 'name')
         .exec((err, villages) => {
             if (err) {
