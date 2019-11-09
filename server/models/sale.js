@@ -23,6 +23,11 @@ let saleSchema = new Schema({
         required:true,
         ref:'User',
     },
+    client:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:'Client',
+    },
     subtotal:{
         type: Number,
         required:true,
