@@ -72,6 +72,11 @@ clientSchema.pre(['save', 'findByIdAndUpdate'], function(next, value) {
 
         }
 
+        if(clientByRut._id === this._id){
+            //es el mismo cliente por lo tanto puede actualizarse
+            return next();
+        }
+
         // Si lo encuentra lanza error
         let error = {
             message: 'El rut ya existe',
