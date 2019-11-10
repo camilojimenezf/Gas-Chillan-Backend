@@ -248,7 +248,17 @@ app.put('/client-address/:id_client', (req,res)=>{
                 err
             });
         }
-        clientDB.address.push(address);
+        if(clientDB.address.includes(address)){
+            return res.status(400).json({
+                ok: false,
+                err:{
+                    message: 'La direccion ya esta vinculada al cliente'
+                }
+            });
+        }else{
+            clientDB.address.push(address);
+        }
+
         clientDB.save((err, clientDB) => {
 
             if (err) {

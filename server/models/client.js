@@ -72,10 +72,15 @@ clientSchema.pre(['save', 'findByIdAndUpdate'], function(next, value) {
 
         }
 
-        if(clientByRut._id === this._id){
-            //es el mismo cliente por lo tanto puede actualizarse
-            return next();
+        if(this._id){
+            //si es una actualizacion verificamos que no sea el mismo usuario
+            if(clientByRut._id.equals(this._id)){
+                //es el mismo cliente por lo tanto puede actualizarse
+                console.log("ENTRA AL IF");
+                next();
+            }
         }
+
 
         // Si lo encuentra lanza error
         let error = {
