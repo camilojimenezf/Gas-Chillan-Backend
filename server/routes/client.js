@@ -225,15 +225,48 @@ app.delete('/client/:id', (req, res) => {
                 }
             });
         }
-
         res.json({
             ok: true,
             client: clientDeleted
         });
+    });
+});
+// =========================================================================================================== //
+// Vincular dirección al cliente //
+// =========================================================================================================== //
+app.put('/client-address/:id_client', (req,res)=>{
 
+    let id=req.params.id_client;
+    let body = req.body;
+
+    let address= body.address;
+
+    Client.findById(id, (err, clientDB)=>{
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+        clientDB.address.push(address);
+        clientDB.save((err, clientDB) => {
+
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                });
+            }
+    
+            res.status(201).json({
+                ok: true,
+                client: clientDB
+            });
+    
+        });
     });
 
-
+    
 });
 
 /*=================================================================================================================================*/
