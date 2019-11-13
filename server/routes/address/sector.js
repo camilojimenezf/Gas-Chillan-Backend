@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 
 const Sector = require('../../models/sector');
+const Order = require('../../models/order');
 
 app.get('/sector', function(req, res) {
 
@@ -141,35 +142,6 @@ app.put('/sector/:id', function(req, res) {
 
     });
 
-    /* Sector.findById(id, (err, sectorDB) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                err
-            });
-        }
-        if (!sectorDB) {
-            return res.status(400).json({
-                ok: false,
-                err: {
-                    message: 'El ID no existe'
-                }
-            });
-        }
-        sectorDB.name = body.name;
-        sectorDB.save((err, sectorUpdate) => {
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    err
-                });
-            }
-            res.json({
-                ok: true,
-                sector: sectorUpdate
-            })
-        });
-    }); */
 });
 
 app.delete('/sector/:id', function(req, res) {
@@ -199,5 +171,46 @@ app.delete('/sector/:id', function(req, res) {
         });
     });
 });
+
+// =========================================================================================================== //
+// Obtener todos los pedidos de un sector //
+// =========================================================================================================== //
+app.get('/sector-order/:id_sector', (req,res)=>{
+
+    let id_sector = req.params.id_sector;
+    let desde = Number(req.query.desde) || 0;
+    let limite = req.query.limite || 5;
+    let enabled = req.query.habilitado || true;
+    limite=Number(limite);
+
+    let start = req.query.start || new Date('2000-01-01').toISOString();
+    let end = req.query.end || new Date().toISOString();
+
+    Order.find({enabled: enabled, created_at: { '$gte': start, '$lte': end }})
+    .skip(desde)   
+    .limit(limite)
+    .populate({path:'address',match:{sector:id_sector}})
+    .populate('recepcionist', 'name surname')
+    .populate('seller', 'name surname')
+    .populate('client', 'name surname phone email client_type')
+    .populate({path:'orderDetail',populate:{ path:'cylinder'}})
+    .exec( (err, orders) =>{
+        if( err ){
+            return res.status(400).json({
+                ok:false,
+                err
+            });
+        }
+        //de momento se filtra de esta manera ya que solo esta cargando las direcciones que coinciden con el sector
+        //las direcciones que no coinciden tendran el campo null
+        orders = orders.filter(o => o.address != null);
+        res.json({
+            ok:true,
+            orders,
+            cantidad: orders.length
+        });
+        
+    });
+})
 
 module.exports = app;

@@ -85,6 +85,11 @@ app.post('/order', function(req, res) {
         enabled: body.enabled
     });
 
+    //Verificar si tiene chofer no puede estar sin asignar
+    if(order.seller && order.order_status==='SIN_ASIGNAR'){
+        order.order_status='ASIGNADO'
+    }
+
     order.save((err, orderDB) => {
         if (err) {
             return res.status(400).json({
